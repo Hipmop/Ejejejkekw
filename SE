@@ -2,12 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Slappy Bird</title>
+    <title>Snake Game</title>
     <style>
         canvas {
             border: 1px solid black;
@@ -17,59 +13,116 @@
     </style>
 </head>
 <body>
-    <canvas id="canvas" width="480" height="320"></canvas>
+    <canvas id="canvas" width="400" height="400"></canvas>
     <script>
         const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext("2d");
 
-        const bird = {
-            x: 50,
-            y: canvas.height / 2,
-            radius: 20,
-            velocityY: 0,
-            gravity: 0.5,
-            jumpStrength: -10,
-
-            jump: function() {
-                this.velocityY = this.jumpStrength;
-            },
-
-            update: function() {
-                this.velocityY += this.gravity;
-                this.y += this.velocityY;
-
-                // 캔버스를 벗어나면 게임 오버
-                if (this.y > canvas.height || this.y < 0) {
-                    alert("Game Over!");
-                    location.reload(); // 새로고침하여 재시작
-                }
-            },
-
-            draw: function() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                ctx.fillStyle = "red";
-                ctx.fill();
-                ctx.closePath();
-            }
+        const tileSize = 20;
+        const snake = {
+            x: 10,
+            y: 10,
+            dx: 0,
+            dy: 0,
+            segments: [{x: 10, y: 10}],
+            segmentLength: 1
         };
 
-        document.addEventListener("keydown", function(event) {
-            if (event.code === "Space") {
-                bird.jump();
-            }
-        });
+        let apple = {
+            x: Math.floor(Math.random() * (canvas.width / tileSize)),
+            y: Math.floor(Math.random() * (canvas.height / tileSize))
+        };
 
-        function gameLoop() {
+        function update() {
+            snake.x += snake.dx;
+            snake.y += snake.dy;
+
+            // 벽 충돌 감지
+            if (snake.x < 0 || snake.x >= canvas.width / tileSize ||
+                snake.y < 0 || snake.y >= canvas.height / tileSize) {
+                reset();
+            }
+
+            // 사과 먹기
+            if (snake.x === apple.x && snake.y === apple.y) {
+                snake.segmentLength++;
+                apple = {
+                    x: Math.floor(Math.random() * (canvas.width / tileSize)),
+                    y: Math.floor(Math.random() * (canvas.height / tileSize))
+                };
+            }
+
+            // 꼬리 갱신
+            snake.segments.push({x: snake.x, y: snake.y});
+            if (snake.segments.length > snake.segmentLength) {
+                snake.segments.shift();
+            }
+        }
+
+        function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            bird.update();
-            bird.draw();
+            // 사과 그리기
+            ctx.fillStyle = "red";
+            ctx.fillRect(apple.x * tileSize, apple.y * tileSize, tileSize, tileSize);
 
+            // 뱀 그리기
+            ctx.fillStyle = "green";
+            snake.segments.forEach(segment => {
+                ctx.fillRect(segment.x * tileSize, segment.y * tileSize, tileSize, tileSize);
+            });
+        }
+
+        function reset() {
+            snake.x = 10;
+            snake.y = 10;
+            snake.dx = 0;
+            snake.dy = 0;
+            snake.segments = [{x: 10, y: 10}];
+            snake.segmentLength = 1;
+            apple = {
+                x: Math.floor(Math.random() * (canvas.width / tileSize)),
+                y: Math.floor(Math.random() * (canvas.height / tileSize))
+            };
+        }
+
+        function gameLoop() {
+            update();
+            draw();
             requestAnimationFrame(gameLoop);
         }
+
+        document.addEventListener("keydown", function(event) {
+            switch(event.key) {
+                case "ArrowUp":
+                    if (snake.dy !== 1) {
+                        snake.dx = 0;
+                        snake.dy = -1;
+                    }
+                    break;
+                case "ArrowDown":
+                    if (snake.dy !== -1) {
+                        snake.dx = 0;
+                        snake.dy = 1;
+                    }
+                    break;
+                case "ArrowLeft":
+                    if (snake.dx !== 1) {
+                        snake.dx = -1;
+                        snake.dy = 0;
+                    }
+                    break;
+                case "ArrowRight":
+                    if (snake.dx !== -1) {
+                        snake.dx = 1;
+                        snake.dy = 0;
+                    }
+                    break;
+            }
+        });
 
         gameLoop();
     </script>
 </body>
 </html>
+
