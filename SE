@@ -26,6 +26,7 @@
         const noteSpeed = 2; // 노트 이동 속도
         const noteSize = 40; // 노트 크기
         const noteSpawnProbability = 0.05; // 노트 생성 확률
+        const scoreDecreaseRate = 0.1; // 노트를 놓칠 때 점수가 감소하는 비율
 
         let score = 0; // 점수 변수
         let isGameOver = false; // 게임 종료 여부
@@ -69,6 +70,11 @@
             if (hitNoteIndex !== -1) {
                 notes.splice(hitNoteIndex, 1);
                 score++;
+            } else {
+                score -= scoreDecreaseRate;
+                if (score < 0) {
+                    score = 0;
+                }
             }
         }
 
@@ -99,7 +105,7 @@
             // 점수 표시
             ctx.fillStyle = 'black';
             ctx.font = '20px Arial';
-            ctx.fillText('Score: ' + score, 10, 30);
+            ctx.fillText('Score: ' + Math.round(score), 10, 30); // 반올림하여 정수로 표시
 
             requestAnimationFrame(gameLoop);
         }
