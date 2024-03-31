@@ -72,7 +72,7 @@
                 const aiCar = document.createElement("div");
                 aiCar.className = "car aiCar";
                 aiCar.style.left = Math.random() * (trackWidth - carWidth) + "px";
-                aiCar.style.backgroundImage = "url('ai_car.jpg')";
+                aiCar.style.backgroundImage = "url('https://www.google.com/search?client=ms-android-samsung-ss&sca_esv=2fa414b916555b62&sca_upv=1&sxsrf=ACQVn08yS7xEuwYgbMO5ffatA5jW7Qf1TA:1711866155593&q=%EC%9E%90%EB%8F%99%EC%B0%A8+%EC%9C%84%EC%97%90%EC%84%9C+%EB%B3%B8%EB%AA%A8%EC%8A%B5&uds=AMwkrPvNVLCVGNFESV01Ay3iEWk6j-VeY_Um-1Rcv1kaUN0uit3pSEy3GChbeoAkiRDu3UQnfWNeEuvr2CLDtmz4QSZoluhJSDtgCuPEvtFPCu3qKBTbAr3r9yQUzcDO8FS8UdE8AuqO8yT298-ptVW65hgar9XfkGpAxdqCuCs_qjRQeBaQj6vAVot04vc3tfUvYhwcU-xc4NV-04LT2msB3VXb5YZjkUAmUiA4p2PUiMOgOoU7u7gMS_r8cGnFADfa8lktWajUMxAQzDmmM4RY5oN3_x5qKQ&udm=2&prmd=isvnbmz&sa=X&ved=2ahUKEwipo-2w7p2FAxWRcvUHHQY6C4QQtKgLegQICxAB&biw=360&bih=647&dpr=3#vhid=IOvDlbtLL192aM&vssid=mosaic&ip=1')";
                 gameContainer.appendChild(aiCar);
                 aiCars.push(aiCar);
             }
