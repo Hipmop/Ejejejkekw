@@ -21,16 +21,30 @@
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        
+
+        const playerCar = new Image();
+        playerCar.src = 'player_car.png';
+        const aiCar = new Image();
+        aiCar.src = 'ai_car.png';
+
         const player = {
             x: canvas.width / 2,
-            y: canvas.height - 30,
-            width: 20,
-            height: 20,
-            color: '#00ff00',
+            y: canvas.height - 50,
+            width: 50,
+            height: 50,
             speed: 5,
             leftPressed: false,
-            rightPressed: false
+            rightPressed: false,
+            image: playerCar
+        };
+
+        const ai = {
+            x: Math.random() * (canvas.width - 50),
+            y: -50,
+            width: 50,
+            height: 50,
+            speed: 5,
+            image: aiCar
         };
 
         document.addEventListener('keydown', keyDownHandler);
@@ -52,12 +66,8 @@
             }
         }
 
-        function drawPlayer() {
-            ctx.beginPath();
-            ctx.rect(player.x, player.y, player.width, player.height);
-            ctx.fillStyle = player.color;
-            ctx.fill();
-            ctx.closePath();
+        function drawCar(car) {
+            ctx.drawImage(car.image, car.x, car.y, car.width, car.height);
         }
 
         function updatePlayerPosition() {
@@ -68,10 +78,20 @@
             }
         }
 
+        function updateAIPosition() {
+            ai.y += ai.speed;
+            if (ai.y > canvas.height) {
+                ai.x = Math.random() * (canvas.width - ai.width);
+                ai.y = -50;
+            }
+        }
+
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawPlayer();
+            drawCar(player);
+            drawCar(ai);
             updatePlayerPosition();
+            updateAIPosition();
             requestAnimationFrame(draw);
         }
 
