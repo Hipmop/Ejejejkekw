@@ -1,74 +1,32 @@
+  <!-- 클라이언트 측 코드 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Popcorn Site</title>
+    <title>Popcat Clicker</title>
     <style>
-        #movies {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-            padding: 20px;
-        }
-        .movie {
+        #popcat {
             width: 200px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            height: 200px;
+            background-color: yellow;
+            border-radius: 50%;
             text-align: center;
+            line-height: 200px;
             cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .movie img {
-            width: 100%;
-            border-radius: 5px;
-        }
-        .movie h2 {
-            margin-top: 10px;
+            user-select: none;
         }
     </style>
 </head>
 <body>
-    <div id="movies">
-        <div class="movie" onclick="playSound('popcorn.mp3')" onmousedown="startCounting()" onmouseup="stopCounting()">
-            <img src="https://via.placeholder.com/150" alt="Movie">
-            <h2>Movie Title 1</h2>
-        </div>
-        <div class="movie" onclick="playSound('popcorn.mp3')" onmousedown="startCounting()" onmouseup="stopCounting()">
-            <img src="https://via.placeholder.com/150" alt="Movie">
-            <h2>Movie Title 2</h2>
-        </div>
-        <div class="movie" onclick="playSound('popcorn.mp3')" onmousedown="startCounting()" onmouseup="stopCounting()">
-            <img src="https://via.placeholder.com/150" alt="Movie">
-            <h2>Movie Title 3</h2>
-        </div>
-        <!-- 여기에 추가 영화 정보를 계속해서 추가할 수 있습니다 -->
-    </div>
-
+    <div id="popcat" onclick="sendClickEvent()">Click Me!</div>
+    
     <script>
-        let count = 0;
-        let intervalId;
-
-        function playSound(soundUrl) {
-            const sound = new Audio(soundUrl);
-            sound.play();
-        }
-
-        function startCounting() {
-            intervalId = setInterval(increaseCount, 100);
-        }
-
-        function stopCounting() {
-            clearInterval(intervalId);
-        }
-
-        function increaseCount() {
-            count++;
-            document.getElementById("countDisplay").innerText = count;
+        function sendClickEvent() {
+            fetch('/click', {
+                method: 'POST',
+            });
         }
     </script>
 </body>
 </html>
- 
