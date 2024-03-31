@@ -19,6 +19,7 @@
             border-radius: 5px;
             text-align: center;
             cursor: pointer;
+            transition: transform 0.2s;
         }
         .movie img {
             width: 100%;
@@ -31,28 +32,41 @@
 </head>
 <body>
     <div id="movies">
-        <div class="movie" onclick="replaceImage(this)">
+        <div class="movie" onclick="playSound('popcorn.mp3')" onmousedown="startCounting()" onmouseup="stopCounting()">
             <img src="https://via.placeholder.com/150" alt="Movie">
             <h2>Movie Title 1</h2>
         </div>
-        <div class="movie" onclick="replaceImage(this)">
+        <div class="movie" onclick="playSound('popcorn.mp3')" onmousedown="startCounting()" onmouseup="stopCounting()">
             <img src="https://via.placeholder.com/150" alt="Movie">
             <h2>Movie Title 2</h2>
         </div>
-        <div class="movie" onclick="replaceImage(this)">
+        <div class="movie" onclick="playSound('popcorn.mp3')" onmousedown="startCounting()" onmouseup="stopCounting()">
             <img src="https://via.placeholder.com/150" alt="Movie">
             <h2>Movie Title 3</h2>
         </div>
         <!-- 여기에 추가 영화 정보를 계속해서 추가할 수 있습니다 -->
     </div>
-    
-    <!-- 소리를 재생할 오디오 객체 -->
-    <audio id="popcornSound" src="popcorn.mp3"></audio>
 
     <script>
-        function replaceImage(element) {
-            // 클릭된 이미지의 src 속성을 변경합니다.
-            element.querySelector("img").src = "new_image_url.jpg"; // 새로운 이미지 URL로 변경해주세요
+        let count = 0;
+        let intervalId;
+
+        function playSound(soundUrl) {
+            const sound = new Audio(soundUrl);
+            sound.play();
+        }
+
+        function startCounting() {
+            intervalId = setInterval(increaseCount, 100);
+        }
+
+        function stopCounting() {
+            clearInterval(intervalId);
+        }
+
+        function increaseCount() {
+            count++;
+            document.getElementById("countDisplay").innerText = count;
         }
     </script>
 </body>
