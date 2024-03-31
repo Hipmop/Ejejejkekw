@@ -12,7 +12,7 @@ class Car:
         self.speed -= random.randint(1, 3)
 
     def display_speed(self):
-        print(f"{self.name}의 속도: {self.speed}")
+        return f"{self.name}의 속도: {self.speed}"
 
 def main():
     player_car = Car("Player Car", 0)
@@ -32,8 +32,8 @@ def main():
 
         opponent_car.accelerate()
 
-        player_car.display_speed()
-        opponent_car.display_speed()
+        print(player_car.display_speed())
+        print(opponent_car.display_speed())
 
         distance += max(player_car.speed - opponent_car.speed, 0)
         print(f"현재 거리: {distance}m")
