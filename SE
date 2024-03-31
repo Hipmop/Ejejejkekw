@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Infinite Stairs</title>
+    <title>Joystick Game</title>
     <style>
         canvas {
             border: 1px solid black;
@@ -20,97 +20,67 @@
 
         const player = {
             x: canvas.width / 2,
-            y: canvas.height - 50,
-            width: 50,
-            height: 50,
-            velocityY: 0,
-            gravity: 0.5,
-            jumpStrength: -10,
-
-            jump: function() {
-                if (this.y === canvas.height - this.height) {
-                    this.velocityY = this.jumpStrength;
-                }
-            },
-
-            update: function() {
-                this.velocityY += this.gravity;
-                this.y += this.velocityY;
-
-                if (this.y > canvas.height - this.height) {
-                    this.y = canvas.height - this.height;
-                    this.velocityY = 0;
-                }
-            },
+            y: canvas.height / 2,
+            size: 20,
+            speed: 3,
+            dx: 0,
+            dy: 0,
 
             draw: function() {
                 ctx.fillStyle = "blue";
-                ctx.fillRect(this.x, this.y, this.width, this.height);
-            }
-        };
-
-        const stairs = [];
-
-        const stair = {
-            width: 100,
-            height: 20,
-            speed: 3,
-            gap: 150,
-            interval: 1000, // 새 계단 생성 간격
-            lastStairTime: 0,
-
-            update: function() {
-                // 일정 시간마다 새 계단 생성
-                if (Date.now() - this.lastStairTime > this.interval) {
-                    const newX = Math.random() * (canvas.width - this.width);
-                    stairs.push({ x: newX });
-                    this.lastStairTime = Date.now();
-                }
-
-                // 계단 이동
-                stairs.forEach(s => {
-                    s.y += this.speed;
-                });
-
-                // 화면을 벗어난 계단 제거
-                if (stairs.length > 0 && stairs[0].y > canvas.height) {
-                    stairs.shift();
-                }
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
             },
 
-            draw: function() {
-                ctx.fillStyle = "green";
-                stairs.forEach(s => {
-                    ctx.fillRect(s.x, s.y, this.width, this.height);
-                });
+            update: function() {
+                this.x += this.dx;
+                this.y += this.dy;
+
+                // 화면을 벗어나지 않도록 제한
+                if (this.x - this.size < 0) {
+                    this.x = this.size;
+                }
+                if (this.x + this.size > canvas.width) {
+                    this.x = canvas.width - this.size;
+                }
+                if (this.y - this.size < 0) {
+                    this.y = this.size;
+                }
+                if (this.y + this.size > canvas.height) {
+                    this.y = canvas.height - this.size;
+                }
             }
         };
 
-        function collisionDetection() {
-            stairs.forEach(s => {
-                if (player.y + player.height > s.y && player.x + player.width > s.x && player.x < s.x + stair.width) {
-                    player.y = s.y - player.height;
-                }
-            });
-        }
+        // 조이스틱 컨트롤러 이벤트 처리
+        canvas.addEventListener("mousemove", function(event) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const mouseX = (event.clientX - rect.left) * scaleX;
+            const mouseY = (event.clientY - rect.top) * scaleY;
+
+            // 플레이어를 조이스틱 위치로 이동
+            const angle = Math.atan2(mouseY - player.y, mouseX - player.x);
+            player.dx = Math.cos(angle) * player.speed;
+            player.dy = Math.sin(angle) * player.speed;
+        });
+
+        canvas.addEventListener("mouseleave", function() {
+            // 마우스가 화면을 벗어나면 플레이어를 정지
+            player.dx = 0;
+            player.dy = 0;
+        });
 
         function gameLoop() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            player.update();
             player.draw();
-            stair.update();
-            stair.draw();
-            collisionDetection();
+            player.update();
 
             requestAnimationFrame(gameLoop);
         }
-
-        document.addEventListener("keydown", function(event) {
-            if (event.code === "Space") {
-                player.jump();
-            }
-        });
 
         gameLoop();
     </script>
