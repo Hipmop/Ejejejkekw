@@ -1,135 +1,49 @@
+import random
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Racing Game</title>
-    <style>
-        #gameContainer {
-            position: relative;
-            width: 800px;
-            height: 600px;
-            margin: 0 auto;
-            overflow: hidden;
-            border: 2px solid black;
-        }
-        .car {
-            position: absolute;
-            width: 100px;
-            height: 100px;
-            background-size: cover;
-            bottom: 0;
-            transition: left 0.1s linear, top 0.1s linear;
-        }
-        #playerCar {
-            left: 50%;
-            transform: translateX(-50%);
-        }
-        .aiCar {
-            background-color: transparent;
-        }
-    </style>
-</head>
-<body>
-    <div id="gameContainer">
-        <div id="playerCar" class="car" style="background-image: url('player_car.jpg')"></div>
-    </div>
-    <button onclick="changeDirection()">Change Direction</button>
+class Car:
+    def __init__(self, name, speed):
+        self.name = name
+        self.speed = speed
 
-    <script>
-        const gameContainer = document.getElementById("gameContainer");
-        const playerCar = document.getElementById("playerCar");
+    def accelerate(self):
+        self.speed += random.randint(1, 5)
 
-        const trackWidth = gameContainer.offsetWidth;
-        const trackHeight = gameContainer.offsetHeight;
-        const carWidth = playerCar.offsetWidth;
-        const carHeight = playerCar.offsetHeight;
+    def brake(self):
+        self.speed -= random.randint(1, 3)
 
-        let playerSpeed = 0;
-        let aiSpeed = 5;
-        let aiCars = [];
+    def display_speed(self):
+        print(f"{self.name}의 속도: {self.speed}")
 
-        // 플레이어 레이싱 카 이동
-        function movePlayerCar(direction) {
-            const currentLeft = parseInt(playerCar.style.left) || trackWidth / 2;
-            if (direction === "left") {
-                playerSpeed -= 0.5;
-            } else if (direction === "right") {
-                playerSpeed += 0.5;
-            }
-            playerSpeed *= 0.9; // 감속도
-            const newLeft = currentLeft + playerSpeed;
-            if (newLeft >= 0 && newLeft + carWidth <= trackWidth) {
-                playerCar.style.left = newLeft + "px";
-            }
-        }
+def main():
+    player_car = Car("Player Car", 0)
+    opponent_car = Car("Opponent Car", 0)
 
-        // AI 레이싱 카 생성
-        function createAICars() {
-            const numberOfAICars = 5;
-            for (let i = 0; i < numberOfAICars; i++) {
-                const aiCar = document.createElement("div");
-                aiCar.className = "car aiCar";
-                aiCar.style.left = Math.random() * (trackWidth - carWidth) + "px";
-                aiCar.style.backgroundImage = "url('ai_car.jpg')";
-                gameContainer.appendChild(aiCar);
-                aiCars.push(aiCar);
-            }
-        }
+    distance = 0
+    while distance < 100:
+        player_choice = input("가속하려면 'a', 브레이크를 사용하려면 'b'를 누르세요: ")
 
-        // AI 레이싱 카 이동
-        function moveAICars() {
-            aiCars.forEach((aiCar) => {
-                const currentTop = parseInt(aiCar.style.top) || 0;
-                const newTop = currentTop + aiSpeed;
-                aiCar.style.top = newTop + "px";
+        if player_choice == 'a':
+            player_car.accelerate()
+        elif player_choice == 'b':
+            player_car.brake()
+        else:
+            print("잘못된 입력입니다. 다시 시도하세요.")
+            continue
 
-                if (newTop > trackHeight) {
-                    aiCar.style.top = "0px";
-                    aiCar.style.left = Math.random() * (trackWidth - carWidth) + "px";
-                }
+        opponent_car.accelerate()
 
-                // 충돌 감지
-                if (checkCollision(playerCar, aiCar)) {
-                    aiSpeed = 0;
-                    setTimeout(() => {
-                        aiSpeed = 5;
-                    }, 1000);
-                }
-            });
-        }
+        player_car.display_speed()
+        opponent_car.display_speed()
 
-        // 충돌 감지 함수
-        function checkCollision(car1, car2) {
-            const rect1 = car1.getBoundingClientRect();
-            const rect2 = car2.getBoundingClientRect();
-            return !(rect1.right < rect2.left || 
-                    rect1.left > rect2.right || 
-                    rect1.bottom < rect2.top || 
-                    rect1.top > rect2.bottom);
-        }
+        distance += max(player_car.speed - opponent_car.speed, 0)
+        print(f"현재 거리: {distance}m")
 
-        createAICars();
+        if distance >= 100:
+            print("축하합니다! 당신이 이겼습니다!")
+        elif player_car.speed <= 0:
+            print("당신의 자동차가 멈췄습니다. 게임 종료!")
+            break
 
-        // 키보드 입력 이벤트 처리
-        document.addEventListener("keydown", (event) => {
-            if (event.key === "ArrowLeft") {
-                movePlayerCar("left");
-            } else if (event.key === "ArrowRight") {
-                movePlayerCar("right");
-            }
-        });
-
-        // 방향 변경 버튼 클릭 이벤트 처리
-        function changeDirection() {
-            playerSpeed *= -1;
-        }
-
-        // 게임 루프
-        setInterval(() => {
-            moveAICars();
-        }, 100);
-    </script>
-</body>
-</html>
+if __name__ == "__main__":
+    main()
+   
