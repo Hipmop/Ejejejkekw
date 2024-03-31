@@ -1,1 +1,110 @@
-<!DOCTYPE html> <html lang="en"> <head>     <meta charset="UTF-8">     <meta name="viewport" content="width=device-width, initial-scale=1.0">     <title>Flappy Bird</title>     <style>         canvas {             border: 1px solid black;             display: block;             margin: 0 auto;         }     </style> </head> <body>     <canvas id="canvas" width="480" height="320"></canvas>     <script>         const canvas = document.getElementById("canvas");         const ctx = canvas.getContext("2d");          const birdImage = new Image(); // 새 이미지 객체 생성         birdImage.src = 'https://www.google.com/search?client=ms-android-samsung-ss&sca_esv=2fa414b916555b62&sca_upv=1&sxsrf=ACQVn08yS7xEuwYgbMO5ffatA5jW7Qf1TA:1711866155593&q=%EC%9E%90%EB%8F%99%EC%B0%A8+%EC%9C%84%EC%97%90%EC%84%9C+%EB%B3%B8%EB%AA%A8%EC%8A%B5&uds=AMwkrPvNVLCVGNFESV01Ay3iEWk6j-VeY_Um-1Rcv1kaUN0uit3pSEy3GChbeoAkiRDu3UQnfWNeEuvr2CLDtmz4QSZoluhJSDtgCuPEvtFPCu3qKBTbAr3r9yQUzcDO8FS8UdE8AuqO8yT298-ptVW65hgar9XfkGpAxdqCuCs_qjRQeBaQj6vAVot04vc3tfUvYhwcU-xc4NV-04LT2msB3VXb5YZjkUAmUiA4p2PUiMOgOoU7u7gMS_r8cGnFADfa8lktWajUMxAQzDmmM4RY5oN3_x5qKQ&udm=2&prmd=isvnbmz&sa=X&ved=2ahUKEwipo-2w7p2FAxWRcvUHHQY6C4QQtKgLegQICxAB&biw=360&bih=647&dpr=3#vhid=IOvDlbtLL192aM&vssid=mosaic&ip=1'; // 이미지 URL 설정          const bird = {             x: 50,             y: canvas.height / 2,             radius: 20,             velocityY: 0,             gravity: 0.03,             jumpStrength: -1.5,              jump: function() {                 this.velocityY = this.jumpStrength;             },              update: function() {                 this.velocityY += this.gravity;                 this.y += this.velocityY;                  if (this.y > canvas.height || this.y < 0) {                     reset();                 }             },              draw: function() {                 ctx.drawImage(birdImage, this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2); // 이미지로 공 그리기             }         };          // 다른 플레이어 추가         const otherPlayers = [];          function drawOtherPlayers() {             otherPlayers.forEach(player => {                 ctx.drawImage(birdImage, player.x - player.radius, player.y - player.radius, player.radius * 2, player.radius * 2);             });         }          function addOtherPlayer(x, y) {             otherPlayers.push({x, y, radius: 20});         }          document.addEventListener("touchstart", function(event) {             bird.jump();         });          function reset() {             bird.y = canvas.height / 2;             bird.velocityY = 0;             pipes.length = 0;             score = 0;         }          function collisionDetection() {             pipes.forEach(p => {                 if (bird.x + bird.radius > p.x && bird.x - bird.radius < p.x + pipe.width &&                     (bird.y - bird.radius < p.height || bird.y + bird.radius > p.height + pipe.gap)) {                     reset();                 }             });         }          function gameLoop() {             ctx.clearRect(0, 0, canvas.width, canvas.height);              bird.update();             bird.draw();             pipe.update();             pipes.forEach(p => pipe.draw(p.x, p.height));             collisionDetection();              pipes.forEach(p => {                 if (p.x + pipe.width < bird.x && !p.passed) {                     score++;                     p.passed = true;                 }             });              drawScore();             drawOtherPlayers(); // 다른 플레이어 그리기              requestAnimationFrame(gameLoop);         }          function drawScore() {             ctx.fillStyle = "black";             ctx.font = "20px Arial";             ctx.fillText("Score: " + score, 10, 30);         }          // 다른 플레이어 추가         addOtherPlayer(150, canvas.height / 2);         addOtherPlayer(250, canvas.height / 3);          gameLoop();     </script> </body> </html> 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rhythm Game</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+            display: block;
+            margin: 0 auto;
+            touch-action: manipulation; /* 모바일에서 기본 스크롤 이벤트 막기 */
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="480" height="320"></canvas>
+    <script>
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+
+        const keyboardKeys = ['a', 's', 'd', 'f']; // 건반에 해당하는 키
+        const keyColors = ['red', 'green', 'blue', 'yellow']; // 건반 색상
+
+        const notes = []; // 리듬 노트 배열
+        const noteSpeed = 2; // 노트 이동 속도
+        const noteSize = 40; // 노트 크기
+
+        let score = 0; // 점수 변수
+        let isGameOver = false; // 게임 종료 여부
+
+        // 사용자 입력 처리
+        canvas.addEventListener('touchstart', function(event) {
+            event.preventDefault(); // 기본 터치 동작 막기
+            if (!isGameOver) {
+                const touchX = event.touches[0].clientX;
+                const touchIndex = Math.floor((touchX / canvas.clientWidth) * keyboardKeys.length);
+                checkNoteHit(touchIndex);
+            } else {
+                resetGame();
+            }
+        });
+
+        // 노트 객체 생성 함수
+        function createNote() {
+            const randomKeyIndex = Math.floor(Math.random() * keyboardKeys.length);
+            const note = {
+                x: canvas.width / 2 - noteSize / 2,
+                y: -noteSize,
+                keyIndex: randomKeyIndex
+            };
+            notes.push(note);
+        }
+
+        // 노트 이동 및 그리기 함수
+        function moveAndDrawNotes() {
+            notes.forEach(note => {
+                note.y += noteSpeed;
+                ctx.fillStyle = keyColors[note.keyIndex];
+                ctx.fillRect(note.x, note.y, noteSize, noteSize);
+            });
+        }
+
+        // 노트와 건반의 충돌 체크 함수
+        function checkNoteHit(keyIndex) {
+            const hitNoteIndex = notes.findIndex(note => note.keyIndex === keyIndex && note.y >= canvas.height - noteSize);
+            if (hitNoteIndex !== -1) {
+                notes.splice(hitNoteIndex, 1);
+                score++;
+            } else {
+                gameOver();
+            }
+        }
+
+        // 게임 오버 처리 함수
+        function gameOver() {
+            isGameOver = true;
+            alert(`Game Over! Your score: ${score}. Tap to restart.`);
+        }
+
+        // 게임 초기화 함수
+        function resetGame() {
+            notes.length = 0;
+            score = 0;
+            isGameOver = false;
+        }
+
+        // 게임 루프
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (!isGameOver) {
+                if (Math.random() < 0.05) { // 일정 확률로 노트 생성
+                    createNote();
+                }
+                moveAndDrawNotes();
+            }
+
+            // 점수 표시
+            ctx.fillStyle = 'black';
+            ctx.font = '20px Arial';
+            ctx.fillText('Score: ' + score, 10, 30);
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        gameLoop();
+    </script>
+</body>
+</html>
