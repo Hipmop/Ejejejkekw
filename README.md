@@ -1,48 +1,81 @@
-import random
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Racing Game</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+        canvas {
+            display: block;
+            background-color: #333;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        const player = {
+            x: canvas.width / 2,
+            y: canvas.height - 30,
+            width: 20,
+            height: 20,
+            color: '#00ff00',
+            speed: 5,
+            leftPressed: false,
+            rightPressed: false
+        };
 
-class Car:
-    def __init__(self, name, speed):
-        self.name = name
-        self.speed = speed
+        document.addEventListener('keydown', keyDownHandler);
+        document.addEventListener('keyup', keyUpHandler);
 
-    def accelerate(self):
-        self.speed += random.randint(1, 5)
+        function keyDownHandler(event) {
+            if (event.key === 'Left' || event.key === 'ArrowLeft') {
+                player.leftPressed = true;
+            } else if (event.key === 'Right' || event.key === 'ArrowRight') {
+                player.rightPressed = true;
+            }
+        }
 
-    def brake(self):
-        self.speed -= random.randint(1, 3)
+        function keyUpHandler(event) {
+            if (event.key === 'Left' || event.key === 'ArrowLeft') {
+                player.leftPressed = false;
+            } else if (event.key === 'Right' || event.key === 'ArrowRight') {
+                player.rightPressed = false;
+            }
+        }
 
-    def display_speed(self):
-        return f"{self.name}의 속도: {self.speed}"
+        function drawPlayer() {
+            ctx.beginPath();
+            ctx.rect(player.x, player.y, player.width, player.height);
+            ctx.fillStyle = player.color;
+            ctx.fill();
+            ctx.closePath();
+        }
 
-def main():
-    player_car = Car("Player Car", 0)
-    opponent_car = Car("Opponent Car", 0)
+        function updatePlayerPosition() {
+            if (player.leftPressed && player.x > 0) {
+                player.x -= player.speed;
+            } else if (player.rightPressed && player.x < canvas.width - player.width) {
+                player.x += player.speed;
+            }
+        }
 
-    distance = 0
-    while distance < 100:
-        player_choice = input("가속하려면 'a', 브레이크를 사용하려면 'b'를 누르세요: ")
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawPlayer();
+            updatePlayerPosition();
+            requestAnimationFrame(draw);
+        }
 
-        if player_choice == 'a':
-            player_car.accelerate()
-        elif player_choice == 'b':
-            player_car.brake()
-        else:
-            print("잘못된 입력입니다. 다시 시도하세요.")
-            continue
-
-        opponent_car.accelerate()
-
-        print(player_car.display_speed())
-        print(opponent_car.display_speed())
-
-        distance += max(player_car.speed - opponent_car.speed, 0)
-        print(f"현재 거리: {distance}m")
-
-        if distance >= 100:
-            print("축하합니다! 당신이 이겼습니다!")
-        elif player_car.speed <= 0:
-            print("당신의 자동차가 멈췄습니다. 게임 종료!")
-            break
-
-if __name__ == "__main__":
-    main()
+        draw();
+    </script>
+</body>
+</html>
