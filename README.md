@@ -15,25 +15,26 @@
         }
         .car {
             position: absolute;
-            width: 50px;
+            width: 100px;
             height: 100px;
-            background-color: red;
+            background-size: cover;
             bottom: 0;
-            transition: left 0.1s linear;
+            transition: left 0.1s linear, top 0.1s linear;
         }
         #playerCar {
             left: 50%;
             transform: translateX(-50%);
         }
         .aiCar {
-            background-color: blue;
+            background-color: transparent;
         }
     </style>
 </head>
 <body>
     <div id="gameContainer">
-        <div id="playerCar" class="car"></div>
+        <div id="playerCar" class="car" style="background-image: url('player_car.jpg')"></div>
     </div>
+    <button onclick="changeDirection()">Change Direction</button>
 
     <script>
         const gameContainer = document.getElementById("gameContainer");
@@ -44,23 +45,22 @@
         const carWidth = playerCar.offsetWidth;
         const carHeight = playerCar.offsetHeight;
 
-        let playerSpeed = 5;
-        let aiSpeed = 4;
+        let playerSpeed = 0;
+        let aiSpeed = 5;
         let aiCars = [];
 
         // 플레이어 레이싱 카 이동
         function movePlayerCar(direction) {
             const currentLeft = parseInt(playerCar.style.left) || trackWidth / 2;
             if (direction === "left") {
-                const newLeft = currentLeft - playerSpeed;
-                if (newLeft >= 0) {
-                    playerCar.style.left = newLeft + "px";
-                }
+                playerSpeed -= 0.5;
             } else if (direction === "right") {
-                const newLeft = currentLeft + playerSpeed;
-                if (newLeft + carWidth <= trackWidth) {
-                    playerCar.style.left = newLeft + "px";
-                }
+                playerSpeed += 0.5;
+            }
+            playerSpeed *= 0.9; // 감속도
+            const newLeft = currentLeft + playerSpeed;
+            if (newLeft >= 0 && newLeft + carWidth <= trackWidth) {
+                playerCar.style.left = newLeft + "px";
             }
         }
 
@@ -71,6 +71,7 @@
                 const aiCar = document.createElement("div");
                 aiCar.className = "car aiCar";
                 aiCar.style.left = Math.random() * (trackWidth - carWidth) + "px";
+                aiCar.style.backgroundImage = "url('ai_car.jpg')";
                 gameContainer.appendChild(aiCar);
                 aiCars.push(aiCar);
             }
@@ -87,7 +88,25 @@
                     aiCar.style.top = "0px";
                     aiCar.style.left = Math.random() * (trackWidth - carWidth) + "px";
                 }
+
+                // 충돌 감지
+                if (checkCollision(playerCar, aiCar)) {
+                    aiSpeed = 0;
+                    setTimeout(() => {
+                        aiSpeed = 5;
+                    }, 1000);
+                }
             });
+        }
+
+        // 충돌 감지 함수
+        function checkCollision(car1, car2) {
+            const rect1 = car1.getBoundingClientRect();
+            const rect2 = car2.getBoundingClientRect();
+            return !(rect1.right < rect2.left || 
+                    rect1.left > rect2.right || 
+                    rect1.bottom < rect2.top || 
+                    rect1.top > rect2.bottom);
         }
 
         createAICars();
@@ -100,6 +119,11 @@
                 movePlayerCar("right");
             }
         });
+
+        // 방향 변경 버튼 클릭 이벤트 처리
+        function changeDirection() {
+            playerSpeed *= -1;
+        }
 
         // 게임 루프
         setInterval(() => {
