@@ -25,6 +25,7 @@
         const notes = []; // 리듬 노트 배열
         const noteSpeed = 2; // 노트 이동 속도
         const noteSize = 40; // 노트 크기
+        const noteSpawnProbability = 0.05; // 노트 생성 확률
 
         let score = 0; // 점수 변수
         let isGameOver = false; // 게임 종료 여부
@@ -44,8 +45,9 @@
         // 노트 객체 생성 함수
         function createNote() {
             const randomKeyIndex = Math.floor(Math.random() * keyboardKeys.length);
+            const randomX = Math.random() * (canvas.width - noteSize);
             const note = {
-                x: canvas.width / 2 - noteSize / 2,
+                x: randomX,
                 y: -noteSize,
                 keyIndex: randomKeyIndex
             };
@@ -67,8 +69,6 @@
             if (hitNoteIndex !== -1) {
                 notes.splice(hitNoteIndex, 1);
                 score++;
-            } else {
-                gameOver();
             }
         }
 
@@ -90,7 +90,7 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             if (!isGameOver) {
-                if (Math.random() < 0.05) { // 일정 확률로 노트 생성
+                if (Math.random() < noteSpawnProbability) { // 일정 확률로 노트 생성
                     createNote();
                 }
                 moveAndDrawNotes();
