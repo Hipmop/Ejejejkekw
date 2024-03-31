@@ -1,118 +1,118 @@
-<!DOCTYPE html>
+<! DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flappy Bird</title>
-    <style>
-        canvas {
-            border: 1px solid black;
-            display: block;
-            margin: 0 auto;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title> Flappy Bird</title>
+<Style>
+canvas {
+border: 1px solid black;
+display: block;
+margin: 0 auto;
+}
+</style>
 </head>
 <body>
-    <canvas id="canvas" width="480" height="320"></canvas>
-    <script>
-        const canvas = document.getElementById("canvas");
-        const ctx = canvas.getContext("2d");
+<canvas id="canvas" Width="480" height="320"></canvas>
+<script>
+const canvas = document.getElementById ("canvas");
+const ctx = canvas.getContext ("2d");
 
-        const birdImage = new Image(); // 새 이미지 객체 생성
-        birdImage.src = 'bird.png'; // 이미지 URL 설정
+const birdImage = new image(); // Create new image object
+birdImage.src = 'https://www.google.com/search? client=ms-android-samsung-ss&sca_esv=2fa414b916555b62&sca_upv=1&sxsrf=ACQVn08yS7xEuwYgbMO5ffatA5jW7Qf1TA:1711866155593&q=%EC%9E%90%EB%8F%99%EC%B0%A8+%EC%9C%84%EC%97%90%EC%84%9C+%EB%B3%B8%EB%AA%A8%EC%8%A%B5&uds=AMwkrPvNVLCVNFESV01Ay3iEWk6j-VeY_Um-1Rcv1kaUN0uit3pSEy3GChbeoAkiRDu3UQnfWNeuvr2CLDtmz4QSZoluhJtgCuPEvtFPCu3qKBTbAr3r9yQUzcD dm=2&prmd=isvnbmz&sa=X&ved=2ahUKEwipo-2w7p2FAxWRcvUHHQY6C4QtKgLegQICxAB&biw=360&bih=647&dpr=3#vhid=IOvDlbtLL192aM&vssid=mosaic&ip=1'; // Image URL setting
 
-        const bird = {
-            x: 50,
-            y: canvas.height / 2,
-            radius: 20,
-            velocityY: 0,
-            gravity: 0.03,
-            jumpStrength: -1.5,
+Const bird = {
+x: 50,
+y: canvas.height / 2,
+radius: 20,
+velocityY: 0,
+gravity: 0.03,
+jumpStrength: -1.5,
 
-            jump: function() {
-                this.velocityY = this.jumpStrength;
-            },
+jump: function() {
+This.velocityY = this.jumpStrength;
+},
 
-            update: function() {
-                this.velocityY += this.gravity;
-                this.y += this.velocityY;
+update: function() {
+This.velocityY += this.gravity;
+This.y += this.velocityY;
 
-                if (this.y > canvas.height || this.y < 0) {
-                    reset();
-                }
-            },
+if (this.y> canvas.height || this.y <0) {
+reset();
+}
+},
 
-            draw: function() {
-                ctx.drawImage(birdImage, this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2); // 이미지로 공 그리기
-            }
-        };
+draw: function() {
+ctx.drawImage (birdImage, this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2); // Draw a ball with an image
+}
+};
 
-        // 다른 플레이어 추가
-        const otherPlayers = [];
+// Add other players
+const otherPlayers = [];
 
-        function drawOtherPlayers() {
-            otherPlayers.forEach(player => {
-                ctx.drawImage(birdImage, player.x - player.radius, player.y - player.radius, player.radius * 2, player.radius * 2);
-            });
-        }
+function drawOtherPlayers() {
+OtherPlayers.forEach (player => {
+ctx.drawImage (birdImage, player.x - player.radius, player.y - player.radius, player.radius * 2, player.radius * 2);
+});
+}
 
-        function addOtherPlayer(x, y) {
-            otherPlayers.push({x, y, radius: 20});
-        }
+function addOtherPlayer(x, y) {
+otherPlayers.push ({x, y, radius: 20});
+}
 
-        document.addEventListener("touchstart", function(event) {
-            bird.jump();
-        });
+document.addEventListener ("touchstart", function (event) {
+bird.jump();
+});
 
-        function reset() {
-            bird.y = canvas.height / 2;
-            bird.velocityY = 0;
-            pipes.length = 0;
-            score = 0;
-        }
+function reset() {
+bird.y = canvas.height / 2;
+bird.velocityY = 0;
+pipes.length = 0;
+score = 0;
+}
 
-        function collisionDetection() {
-            pipes.forEach(p => {
-                if (bird.x + bird.radius > p.x && bird.x - bird.radius < p.x + pipe.width &&
-                    (bird.y - bird.radius < p.height || bird.y + bird.radius > p.height + pipe.gap)) {
-                    reset();
-                }
-            });
-        }
+function collision detection() {
+pipes.forEach(p => {
+If (bird.x + bird.radius > p.x & & bird.x - bird.radius < p.x + pipe.width &&
+(bird.y - bird.radius < p.height | bird.y + bird.radius > p.height + pipe.gap) {
+reset();
+}
+});
+}
 
-        function gameLoop() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+function gameLoop() {
+ctx.clearRect (0, 0, canvas.width, canvas.height);
 
-            bird.update();
-            bird.draw();
-            pipe.update();
-            pipes.forEach(p => pipe.draw(p.x, p.height));
-            collisionDetection();
+bird.update;
+bird.draw;
+pipe.update ();
+pipes.forEach (p => pipe.draw (p.x, p.height);
+collision detection ();
 
-            pipes.forEach(p => {
-                if (p.x + pipe.width < bird.x && !p.passed) {
-                    score++;
-                    p.passed = true;
-                }
-            });
+pipes.forEach(p => {
+If (p.x + pipe.width < bird.x &&! p.passed) {
+score++;
+p.passed = true;
+}
+});
 
-            drawScore();
-            drawOtherPlayers(); // 다른 플레이어 그리기
+drawScore();
+drawOtherPlayers (); // Draw another player
 
-            requestAnimationFrame(gameLoop);
-        }
+requestAnimationFrame (gameLoop);
+}
 
-        function drawScore() {
-            ctx.fillStyle = "black";
-            ctx.font = "20px Arial";
-            ctx.fillText("Score: " + score, 10, 30);
-        }
+function drawScore() {
+ctx.fillStyle = "black";
+ctx.font = "20px Arial";
+ctx.fillText ("Score: " + score, 10, 30);
+}
 
-        // 다른 플레이어 추가
-        addOtherPlayer(150, canvas.height / 2);
-        addOtherPlayer(250, canvas.height / 3);
+// Add other players
+addOtherPlayer (150, canvas.height / 2);
+addOtherPlayer (250, canvas.height/3);
 
-        gameLoop();
-    </script>
+gameLoop;
+</script>
 </body>
-</html>
+</html> 
