@@ -1,1 +1,19 @@
+// 서버 측 코드 (Node.js 예시)
+const express = require('express');
+const app = express();
+
+let clickCount = 0;
+
+app.use(express.static('public'));
+app.use(express.json());
+
+app.post('/click', (req, res) => {
+    clickCount++;
+    console.log(`Current Click Count: ${clickCount}`);
+    res.sendStatus(200);
+});
+
+app.listen(3000, () => {
+    console.log('Server is running on port 3000');
+});
    
