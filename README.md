@@ -3,86 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Joystick Game</title>
+    <title>Popcorn Site</title>
     <style>
-        canvas {
-            border: 1px solid black;
-            display: block;
-            margin: 0 auto;
+        #movies {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            padding: 20px;
+        }
+        .movie {
+            width: 200px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+        }
+        .movie img {
+            width: 100%;
+            border-radius: 5px;
+        }
+        .movie h2 {
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
-    <canvas id="canvas" width="480" height="320"></canvas>
+    <div id="movies">
+        <div class="movie" onclick="replaceImage(this)">
+            <img src="https://via.placeholder.com/150" alt="Movie">
+            <h2>Movie Title 1</h2>
+        </div>
+        <div class="movie" onclick="replaceImage(this)">
+            <img src="https://via.placeholder.com/150" alt="Movie">
+            <h2>Movie Title 2</h2>
+        </div>
+        <div class="movie" onclick="replaceImage(this)">
+            <img src="https://via.placeholder.com/150" alt="Movie">
+            <h2>Movie Title 3</h2>
+        </div>
+        <!-- 여기에 추가 영화 정보를 계속해서 추가할 수 있습니다 -->
+    </div>
+    
+    <!-- 소리를 재생할 오디오 객체 -->
+    <audio id="popcornSound" src="popcorn.mp3"></audio>
+
     <script>
-        const canvas = document.getElementById("canvas");
-        const ctx = canvas.getContext("2d");
-
-        const player = {
-            x: canvas.width / 2,
-            y: canvas.height / 2,
-            size: 20,
-            speed: 3,
-            dx: 0,
-            dy: 0,
-
-            draw: function() {
-                ctx.fillStyle = "blue";
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            },
-
-            update: function() {
-                this.x += this.dx;
-                this.y += this.dy;
-
-                // 화면을 벗어나지 않도록 제한
-                if (this.x - this.size < 0) {
-                    this.x = this.size;
-                }
-                if (this.x + this.size > canvas.width) {
-                    this.x = canvas.width - this.size;
-                }
-                if (this.y - this.size < 0) {
-                    this.y = this.size;
-                }
-                if (this.y + this.size > canvas.height) {
-                    this.y = canvas.height - this.size;
-                }
-            }
-        };
-
-        // 조이스틱 컨트롤러 이벤트 처리
-        canvas.addEventListener("mousemove", function(event) {
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-            const mouseX = (event.clientX - rect.left) * scaleX;
-            const mouseY = (event.clientY - rect.top) * scaleY;
-
-            // 플레이어를 조이스틱 위치로 이동
-            const angle = Math.atan2(mouseY - player.y, mouseX - player.x);
-            player.dx = Math.cos(angle) * player.speed;
-            player.dy = Math.sin(angle) * player.speed;
-        });
-
-        canvas.addEventListener("mouseleave", function() {
-            // 마우스가 화면을 벗어나면 플레이어를 정지
-            player.dx = 0;
-            player.dy = 0;
-        });
-
-        function gameLoop() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            player.draw();
-            player.update();
-
-            requestAnimationFrame(gameLoop);
+        function replaceImage(element) {
+            // 클릭된 이미지의 src 속성을 변경합니다.
+            element.querySelector("img").src = "new_image_url.jpg"; // 새로운 이미지 URL로 변경해주세요
         }
-
-        gameLoop();
     </script>
 </body>
 </html>
