@@ -5,49 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Racing Game</title>
     <style>
-        #playerCar {
+        #gameContainer {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            margin: 0 auto;
+            overflow: hidden;
+            border: 2px solid black;
+        }
+        .car {
             position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
             width: 50px;
             height: 100px;
             background-color: red;
+            bottom: 0;
+            transition: left 0.1s linear;
+        }
+        #playerCar {
+            left: 50%;
+            transform: translateX(-50%);
         }
         .aiCar {
-            position: absolute;
-            width: 50px;
-            height: 100px;
             background-color: blue;
         }
     </style>
 </head>
 <body>
-    <div id="playerCar"></div>
-    <div id="aiCarsContainer"></div>
+    <div id="gameContainer">
+        <div id="playerCar" class="car"></div>
+    </div>
 
     <script>
+        const gameContainer = document.getElementById("gameContainer");
         const playerCar = document.getElementById("playerCar");
-        const aiCarsContainer = document.getElementById("aiCarsContainer");
 
-        const playerSpeed = 5;
-        const aiSpeed = 4;
-        const trackWidth = window.innerWidth;
-        const trackHeight = window.innerHeight;
+        const trackWidth = gameContainer.offsetWidth;
+        const trackHeight = gameContainer.offsetHeight;
+        const carWidth = playerCar.offsetWidth;
+        const carHeight = playerCar.offsetHeight;
 
-        let playerPosition = trackWidth / 2;
+        let playerSpeed = 5;
+        let aiSpeed = 4;
         let aiCars = [];
 
         // 플레이어 레이싱 카 이동
         function movePlayerCar(direction) {
+            const currentLeft = parseInt(playerCar.style.left) || trackWidth / 2;
             if (direction === "left") {
-                playerPosition -= playerSpeed;
-                if (playerPosition < 0) playerPosition = 0;
+                const newLeft = currentLeft - playerSpeed;
+                if (newLeft >= 0) {
+                    playerCar.style.left = newLeft + "px";
+                }
             } else if (direction === "right") {
-                playerPosition += playerSpeed;
-                if (playerPosition > trackWidth) playerPosition = trackWidth;
+                const newLeft = currentLeft + playerSpeed;
+                if (newLeft + carWidth <= trackWidth) {
+                    playerCar.style.left = newLeft + "px";
+                }
             }
-            playerCar.style.left = playerPosition + "px";
         }
 
         // AI 레이싱 카 생성
@@ -55,9 +69,9 @@
             const numberOfAICars = 5;
             for (let i = 0; i < numberOfAICars; i++) {
                 const aiCar = document.createElement("div");
-                aiCar.className = "aiCar";
-                aiCar.style.left = Math.floor(Math.random() * trackWidth) + "px";
-                aiCarsContainer.appendChild(aiCar);
+                aiCar.className = "car aiCar";
+                aiCar.style.left = Math.random() * (trackWidth - carWidth) + "px";
+                gameContainer.appendChild(aiCar);
                 aiCars.push(aiCar);
             }
         }
@@ -65,12 +79,13 @@
         // AI 레이싱 카 이동
         function moveAICars() {
             aiCars.forEach((aiCar) => {
-                const currentLeft = parseInt(aiCar.style.left);
-                const newLeft = currentLeft + aiSpeed;
-                aiCar.style.left = newLeft + "px";
+                const currentTop = parseInt(aiCar.style.top) || 0;
+                const newTop = currentTop + aiSpeed;
+                aiCar.style.top = newTop + "px";
 
-                if (newLeft > trackWidth) {
-                    aiCar.style.left = "0px";
+                if (newTop > trackHeight) {
+                    aiCar.style.top = "0px";
+                    aiCar.style.left = Math.random() * (trackWidth - carWidth) + "px";
                 }
             });
         }
